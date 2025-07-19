@@ -1,0 +1,48 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://database:3306/visitcounter
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+
+  database:
+    image: mariadb:latest
+    environment:
+      - MARIADB_RANDOM_ROOT_PASSWORD
+      - MARIADB_USER=user
+      - MARIADB_PASSWORD=123456
+      - MARIADB_DATABASE=visitcounter
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./db/1_schema.sql:/docker-entrypoint-initdb.d/1_schema.sql:ro
+      - ./db/2_initial_data.sql:/docker-entrypoint-initdb.d/2_initial_data.sql:ro
+      - database_data:/var/lib/mysql
+
+  redis:
+    image: redis:latest
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - redis_data:/data
+
+volumes:
+  database_data:
+  redis_data:

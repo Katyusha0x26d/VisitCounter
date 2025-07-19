@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:th="http://www.thymeleaf.org"
+     width="200" height="30" viewBox="0 0 200 30">
+    <rect x="0%" y="0%" width="50%" height="100%" fill="#21262d"/>
+    <rect x="50%" y="0%" width="50%" height="100%" fill="#161b22"/>
+    <text x="25%" y="50%" font-size="14" font-family="Ubuntu Mono" fill="#7ce38b" text-anchor="middle" dominant-baseline="middle" font-weight="bold" letter-spacing="3">
+        VISITORS
+    </text>
+    <text th:text="${#numbers.formatInteger(count, 8)}" x="75%" y="50%" font-size="14" font-family="Ubuntu Mono" fill="#7ce38b" text-anchor="middle" dominant-baseline="middle" font-weight="bold" letter-spacing="3">
+        01234567
+    </text>
+</svg>

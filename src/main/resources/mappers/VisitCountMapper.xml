@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.katyusha.visitcounter.mapper.VisitCountMapper">
+
+    <resultMap id="VisitCountResultMap" type="me.katyusha.visitcounter.entity.VisitCount">
+        <id property="id" column="id"/>
+        <result property="pageKey" column="page_key"/>
+        <result property="count" column="count"/>
+    </resultMap>
+
+    <select id="findByPageKey" resultMap="VisitCountResultMap">
+        SELECT * FROM visit_count
+        WHERE page_key = #{pageKey}
+    </select>
+
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO visit_count (page_key, count)
+        VALUES (#{visitCount.pageKey}, #{visitCount.count})
+    </insert>
+
+    <insert id="insertZero" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO visit_count (page_key, count)
+        VALUES (#{pageKey}, 0)
+    </insert>
+
+    <update id="batchUpdate">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE visit_count
+            SET count = #{item.count}
+            WHERE page_key = #{item.pageKey}
+        </foreach>
+    </update>
+
+</mapper>
