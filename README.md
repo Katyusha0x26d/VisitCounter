@@ -2,6 +2,8 @@
 
 Markdown page visit counter
 
+![counter](https://counter.katyusha.me/count/svg/VisitCounter/for-the-badge_dark.svg)
+
 ## Installation
 
 ### Docker
@@ -9,7 +11,7 @@ Markdown page visit counter
 [Install Docker Engine](https://docs.docker.com/engine/install/) if you are using Linux 
 or [install Docker Desktop](https://docs.docker.com/engine/install/) if you are using Microsoft Windows and prefer graphics user interface.
 
-### Environment
+### Build and Deploy
 
 Build the project, `.jar` file is at `build/libs`,
 
@@ -26,7 +28,7 @@ java -jar build/libs/VisitCounter-{version}.jar
 Or simply use docker-compose to deploy and launch: 
 
 ```shell
-docker compose up -d --build
+docker-compose up -d --build
 ```
 
 ## Usage
