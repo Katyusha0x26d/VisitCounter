@@ -18,7 +18,7 @@ public class SVGCounterController {
     @GetMapping(value = "/{pageKey}/{template}.svg", produces = "image/svg+xml")
     public ResponseEntity<String> getSVGCounter(@PathVariable("pageKey") String pageKey, @PathVariable("template") String template) {
         return ResponseEntity.ok()
-                .cacheControl(CacheControl.noCache())
+                .cacheControl(CacheControl.noStore())
                 .body(svgCounterService.getSVGCounter(pageKey, template));
     }
 }
