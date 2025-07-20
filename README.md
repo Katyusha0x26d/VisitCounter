@@ -16,6 +16,7 @@ or [install Docker Desktop](https://docs.docker.com/engine/install/) if you are 
 Build the project, `.jar` file is at `build/libs`,
 
 ```shell
+chmod +x gradlew
 ./gradlew bootJar
 ```
 
