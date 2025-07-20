@@ -25,9 +25,9 @@ services:
       - MARIADB_DATABASE=visitcounter
     healthcheck:
       test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 3s
+      retries: 3
     volumes:
       - ./db/1_schema.sql:/docker-entrypoint-initdb.d/1_schema.sql:ro
       - ./db/2_initial_data.sql:/docker-entrypoint-initdb.d/2_initial_data.sql:ro
@@ -37,9 +37,9 @@ services:
     image: redis:latest
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 5s
+      timeout: 3s
+      retries: 3
     volumes:
       - redis_data:/data
 

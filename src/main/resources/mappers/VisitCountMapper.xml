@@ -20,17 +20,24 @@
         VALUES (#{visitCount.pageKey}, #{visitCount.count})
     </insert>
 
-    <insert id="insertZero" keyProperty="id" useGeneratedKeys="true">
+    <insert id="insertZero">
         INSERT INTO visit_count (page_key, count)
         VALUES (#{pageKey}, 0)
     </insert>
 
-    <update id="batchUpdate">
-        <foreach collection="list" item="item" separator=";">
-            UPDATE visit_count
-            SET count = #{item.count}
-            WHERE page_key = #{item.pageKey}
-        </foreach>
+    <update id="batchUpdate" parameterType="list">
+        <if test="list != null and list.size() > 0">
+            UPDATE visit_count SET
+            count = CASE page_key
+            <foreach collection="list" item="item">
+                WHEN #{item.pageKey} THEN #{item.count}
+            </foreach>
+            END
+            WHERE page_key IN
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item.pageKey}
+            </foreach>
+        </if>
     </update>
 
 </mapper>

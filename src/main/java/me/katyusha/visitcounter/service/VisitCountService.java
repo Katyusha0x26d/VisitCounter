@@ -1,18 +1,13 @@
 package me.katyusha.visitcounter.service;
 
-import jakarta.annotation.Nullable;
 import me.katyusha.visitcounter.entity.VisitCount;
 import me.katyusha.visitcounter.mapper.VisitCountMapper;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -56,11 +51,17 @@ public class VisitCountService {
                 try {
                     Object cachedCount = redisTemplate.opsForValue().get(redisCountKey);
                     if (cachedCount != null) {
-                        return (Long) cachedCount;
+                        return ((Number) cachedCount).longValue();
                     }
 
                     VisitCount visitCount = visitCountMapper.findByPageKey(pageKey);
-                    Long count = Optional.ofNullable(visitCount).map(VisitCount::getCount).orElse(0L);
+                    Long count = Optional.ofNullable(visitCount)
+                            .map(VisitCount::getCount)
+                            .orElseGet(() -> {
+                                visitCountMapper.insertZero(pageKey);
+                                return 0L;
+                            });
+
                     Long finalCount = count + 1;
                     redisTemplate.opsForValue().set(redisCountKey, finalCount, REDIS_COUNT_TTL, TimeUnit.SECONDS);
                     return finalCount;
@@ -87,8 +88,7 @@ public class VisitCountService {
         return count;
     }
 
-    @Scheduled(fixedDelay = SYNC_INTERVAL * 1000)
-    @Transactional
+    @Scheduled(fixedDelay = SYNC_INTERVAL, timeUnit = TimeUnit.SECONDS)
     public void syncToDatabase() {
         String redisAllKey = REDIS_COUNT_PREFIX + "*";
         Set<String> redisKeys = redisTemplate.keys(redisAllKey);
@@ -98,7 +98,7 @@ public class VisitCountService {
             if (redisValue != null) {
                 VisitCount visitCount = new VisitCount();
                 visitCount.setPageKey(redisKey.substring(REDIS_COUNT_PREFIX.length()));
-                visitCount.setCount((Long) redisValue);
+                visitCount.setCount(((Number) redisValue).longValue());
                 updateList.add(visitCount);
             }
         }
