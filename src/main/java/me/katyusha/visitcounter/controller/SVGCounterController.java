@@ -5,6 +5,8 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.TimeUnit;
+
 @RestController
 @RequestMapping("/count/svg/")
 public class SVGCounterController {
@@ -18,7 +20,7 @@ public class SVGCounterController {
     @GetMapping(value = "/{pageKey}/{template}.svg", produces = "image/svg+xml")
     public ResponseEntity<String> getSVGCounter(@PathVariable("pageKey") String pageKey, @PathVariable("template") String template) {
         return ResponseEntity.ok()
-                .cacheControl(CacheControl.noStore())
+                .header("Cache-Control", "max-age=0, no-cache, no-store, must-revalidate")
                 .body(svgCounterService.getSVGCounter(pageKey, template));
     }
 }
