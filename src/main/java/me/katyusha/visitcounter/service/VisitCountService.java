@@ -51,7 +51,9 @@ public class VisitCountService {
                 try {
                     Object cachedCount = redisTemplate.opsForValue().get(redisCountKey);
                     if (cachedCount != null) {
-                        return ((Number) cachedCount).longValue();
+                        Long count = ((Number) cachedCount).longValue() + 1;
+                        redisTemplate.opsForValue().set(redisCountKey, count, REDIS_COUNT_TTL, TimeUnit.SECONDS);
+                        return count;
                     }
 
                     VisitCount visitCount = visitCountMapper.findByPageKey(pageKey);
